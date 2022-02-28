@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 const userController = require("./controller");
 
+const authCheck = require("../auth/authCheck");
+
 let products = [];
 
-router.get("/", userController.getAll);
+router.get("/", authCheck, userController.getAll);
 
-router.post("/", userController.create);
+router.post("/", authCheck, userController.create);
 
-router.put("/:uid", userController.update);
+router.put("/:uid", authCheck, userController.update);
 
-router.delete("/:uid", userController.deleteUser);
+router.delete("/:uid", authCheck, userController.deleteUser);
 
 module.exports = router;

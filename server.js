@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = require("./users/routes");
 const authRouter = require("./auth/routes");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
 const app = express();
 
@@ -28,4 +29,10 @@ app.use((err, req, res, next) => {
 app.get("/errorasync", async (req, res, next) => {
   next(new Error("Error occured from /error"));
 });
-app.listen(3008, () => console.log(`server is ready!!`));
+
+async function start() {
+  await mongoose.connect(process.env.MONGO_URL);
+  app.listen(3008, () => console.log(`server is readyyy!!`));
+}
+//app.listen(3008, () => console.log(`server is ready!!`));
+start().catch((err) => console.log(err));

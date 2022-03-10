@@ -4,9 +4,10 @@ const userController = require("./controller");
 
 const authCheck = require("../auth/authCheck");
 
-let products = [];
+//let products = [];
 
 router.get("/", authCheck, userController.getAll);
+router.get("/:uid", authCheck, userController.getDetails);
 
 router.post("/", authCheck, userController.create);
 

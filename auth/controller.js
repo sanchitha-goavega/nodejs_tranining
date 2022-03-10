@@ -1,8 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-let users = [];
+const auth = require("./auth.schema.js");
+//let users = [];
 
-const register = (req, res) => {
+const register = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     res.status(200);
@@ -10,25 +11,33 @@ const register = (req, res) => {
   }
   let user = { email, password };
   user.password = bcrypt.hashSync(password, 10);
-  users = [user, ...users];
-  res.json({ message: "succefully registered", status: true });
+  // users = [user, ...users];
+  //console.log("new user", user);
+  await auth.create(user);
+  res.json({ success: true, message: "succefully registered", status: true });
 };
-const login = (req, res) => {
+
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    throw new Error("Email/Password Credentials");
+    next(new Error("Email/Password required"));
+    return;
   }
 
-  const user = users.find((e) => e.email === email);
+  const user = await auth.findOne({ email });
+  // console.log(user);
   if (!user) {
     res.status(400);
-    throw new Error("Invalid Credentials");
+    next(new Error("Invalid Credentialssss"));
+    return;
   }
+  // console.log(password + "||" + user.password);
   const passwordMatched = bcrypt.compareSync(password, user.password);
 
   if (!passwordMatched) {
     res.status(403);
-    throw new Error("Invalid credentials");
+    next(new Error("Invalid credentials"));
+    return;
   }
 
   const token = jwt.sign({ email }, process.env.jwt_SECRET);
